@@ -1,9 +1,17 @@
 #!/bin/sh
 
+set -e
+
 # 외부 ip 허용
 echo "external ip setting"
 sed -i "s|.*bind-address\s*=.*|#bind-address=127.0.0.1|g" /etc/mysql/mariadb.conf.d/50-server.cnf
 echo "complete"
+
+# Check if data directory is empty
+if [ ! -d "/var/lib/mysql/mysql" ]; then
+  echo "Initializing MariaDB data directory..."
+  mysql_install_db --user=mysql --datadir=/var/lib/mysql
+fi
 
 # mariadb 서버 임시 시작
 echo "starting mariadb"

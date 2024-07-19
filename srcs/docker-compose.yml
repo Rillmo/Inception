@@ -7,6 +7,9 @@ volumes:
 
 services:
   mariadb:
+    volumes:  #수정필요
+      - ~/Develop/Docker/data/mysql:/var/lib/mysql/
+    image: mariadb:0.0
     build: ./requirements/mariadb/
     restart: always
     expose:
@@ -17,6 +20,8 @@ services:
     env_file:
       - ".env"
   wordpress:
+    # image: wordpress:0.0
+    # build: ./requirements/wordpress
     image: debian:bookworm
     restart: always
     volumes:
@@ -26,6 +31,8 @@ services:
     networks:
       - inner
     tty : true
+    depends_on:
+      - nginx
   nginx:
     image: debian:bookworm
     restart: always
@@ -36,6 +43,8 @@ services:
     networks:
       - inner
     tty: true
+    depends_on:
+      - mariadb
 
 networks:
   inner:
