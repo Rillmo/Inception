@@ -7,22 +7,20 @@ volumes:
 
 services:
   mariadb:
-    volumes:  #수정필요
-      - ~/Develop/Docker/data/mysql:/var/lib/mysql/
     image: mariadb:0.0
     build: ./requirements/mariadb/
     restart: always
+    volumes:  #수정필요
+      - ~/Develop/Docker/data/mysql:/var/lib/mysql/
     expose:
       - "3306"
     networks:
       - inner
     tty: true
-    env_file:
-      - ".env"
   wordpress:
-    # image: wordpress:0.0
-    # build: ./requirements/wordpress
-    image: debian:bookworm
+    # image: debian:bookworm
+    image: wordpress:0.0
+    build: ./requirements/wordpress/
     restart: always
     volumes:
       - data:/var/www/html
