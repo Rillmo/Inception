@@ -1,10 +1,11 @@
-FROM alpine:3.19
+FROM debian:bookworm
 
-RUN apk update && apk upgrade
-RUN apk add --no-cache mariadb mariadb-client
+RUN apt-get update -y && \
+	apt-get upgrade -y && \
+	apt-get install -y mariadb-server mariadb-client
 
-RUN mkdir -p /var/lib/mysql /run/mysqld
-RUN	chown -R mysql:mysql /var/lib/mysql /run/mysqld
+RUN mkdir -p /var/lib/mysql /var/run/mysqld
+RUN	chown -R mysql:mysql /var/lib/mysql /var/run/mysqld
 RUN chmod +x /var/run/mysqld
 
 EXPOSE 3306
@@ -12,5 +13,4 @@ EXPOSE 3306
 COPY /tools/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["mysqld"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

@@ -1,0 +1,42 @@
+version: '3'
+
+name: inception
+
+volumes:
+  data:
+
+services:
+  mariadb:
+    build: ./requirements/mariadb/
+    restart: always
+    expose:
+      - "3306"
+    networks:
+      - inner
+    tty: true
+    env_file:
+      - ".env"
+  wordpress:
+    image: debian:bookworm
+    restart: always
+    volumes:
+      - data:/var/www/html
+    expose:
+      - "9000"
+    networks:
+      - inner
+    tty : true
+  nginx:
+    image: debian:bookworm
+    restart: always
+    ports:
+      - "443:443"
+    volumes:
+      - data:/var/www/html
+    networks:
+      - inner
+    tty: true
+
+networks:
+  inner:
+    driver: bridge
