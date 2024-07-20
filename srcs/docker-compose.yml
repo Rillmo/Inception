@@ -2,47 +2,53 @@ version: '3'
 
 name: inception
 
-volumes:
-  data:
-
 services:
   mariadb:
     image: mariadb:0.0
     build: ./requirements/mariadb/
     restart: always
-    volumes:  #수정필요
-      - ~/Develop/Docker/data/mysql:/var/lib/mysql/
+    volumes:  # 수정필요 -> /home/junkim2/data/mysql
+      - /Users/kimjunho/Develop/Docker/data/mysql:/var/lib/mysql/
     expose:
       - "3306"
     networks:
       - inner
     tty: true
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER_PASSWORD=${MYSQL_USER_PASSWORD}
   wordpress:
-    # image: debian:bookworm
     image: wordpress:0.0
     build: ./requirements/wordpress/
     restart: always
     volumes:
-      - data:/var/www/html
+      - /Users/kimjunho/Develop/Docker/data/web:/var/www/html
     expose:
       - "9000"
     networks:
       - inner
     tty : true
+    environment:
+      - WORDPRESS_DB=${WORDPRESS_DB}
+      - WORDPRESS_DB_USERNAME=${WORDPRESS_DB_USERNAME}
+      - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD}
+      - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
     depends_on:
-      - nginx
+      - mariadb
   nginx:
-    image: debian:bookworm
+    # image: debian:bookworm
+    image: nginx:0.0
+    build: ./requirements/nginx/
     restart: always
     ports:
       - "443:443"
     volumes:
-      - data:/var/www/html
+      - /Users/kimjunho/Develop/Docker/data/web:/var/www/html
     networks:
       - inner
     tty: true
     depends_on:
-      - mariadb
+      - wordpress
 
 networks:
   inner:

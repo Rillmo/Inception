@@ -2,11 +2,10 @@
 
 set -e
 
-
 if [ ! -d "/var/lib/mysql/mysql" ]; then
 	# 외부 ip 허용
 	echo "external ip setting"
-	sed -i "s|.*bind-address\s*=.*|#bind-address=127.0.0.1|g" /etc/mysql/mariadb.conf.d/50-server.cnf
+	sed -i "s|^bind-address\s*=.*|bind-address = 0.0.0.0|" /etc/mysql/mariadb.conf.d/50-server.cnf
 	echo "complete"
 	
 	# Check if data directory is empty
@@ -27,7 +26,7 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
 	echo "wordpress user & db setting"
 	mariadb -u root <<-EOSQL
 		CREATE DATABASE IF NOT EXISTS wordpress_db;
-		CREATE USER 'junkim2'@'%' IDENTIFIED BY "$MYSQL_USER_PASSWORD";
+		CREATE USER 'junkim2'@'%' IDENTIFIED BY '$MYSQL_USER_PASSWORD';
 		GRANT ALL ON wordpress_db.* TO 'junkim2'@'%';
 		FLUSH PRIVILEGES;
 		ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';

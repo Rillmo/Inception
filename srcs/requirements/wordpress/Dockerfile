@@ -4,7 +4,7 @@ RUN apt-get update -y && \
 	apt-get upgrade -y && \
 	apt-get -y install \
 	mariadb-client \
-	php8.2 \
+	php \
 	php-fpm \
 	php-cli \
 	wget \
@@ -15,13 +15,6 @@ RUN apt-get update -y && \
 	sendmail \
 	vim \
 	tini
-
-RUN wget https://wordpress.org/latest.tar.gz && \
-	tar -xvf latest.tar.gz && \
-	mkdir -p /var/www/html && \
-	mv /wordpress/* /var/www/html/ && \
-	chown -R www-data:www-data /var/www/html && \ 
-	rm -r /wordpress latest.tar.gz
 
 EXPOSE 9000
 
