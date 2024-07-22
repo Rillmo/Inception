@@ -8,19 +8,22 @@ echo "php version check"
 PHP_VERSION=$(ls /etc/php/ | grep -E '^[0-9]+\.[0-9]+$')
 echo "complete"
 
-# if [ ! -f /var/www/html/wp-config.php ]; then
-#     # wp-cli 설치
-#     echo "installing wp-cli"
-#     wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-#     chmod +x wp-cli.phar
-#     mv wp-cli.phar /usr/local/bin/wp
-#     echo "complete"
+# wp-config 환경변수 설정
+echo "wp-config env setting"
+CONFIG_FILE="/etc/php/$PHP_VERSION/fpm/pool.d/www.conf"
+sed -i 's|^;clear_env = no|clear_env = no|' "$CONFIG_FILE"
+echo "complete"
 
-#     # wp-cli 세팅
-#     wp core download --allow-root --path=/var/www/html
-
-# fi
-
+# php 외부 연결 오픈
+echo "php external connection open"
+if [ -f "$CONFIG_FILE" ]; then
+    # 'listen' 설정 변경
+    sed -i 's|^listen = /run/php/php'"$PHP_VERSION"'-fpm.sock.*|listen = 0.0.0.0:9000|' "$CONFIG_FILE"
+    echo "Updated $CONFIG_FILE"
+else
+    echo "Config file not found for PHP version $PHP_VERSION"
+fi
+echo "complete"
 
 if [ ! -f /var/www/html/wp-config.php ]; then
     # wordpress 설치
@@ -35,12 +38,6 @@ if [ ! -f /var/www/html/wp-config.php ]; then
     # wordpress 설정파일 이름 변경
     echo "wp-config setting"
     mv /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
-    echo "complete"
-
-    # wp-config 환경변수 설정
-    echo "wp-config env setting"
-    CONFIG_FILE="/etc/php/$PHP_VERSION/fpm/pool.d/www.conf"
-    sed -i 's|^;clear_env = no|clear_env = no|' "$CONFIG_FILE"
     echo "complete"
 
     # wordpress DB 설정
@@ -72,17 +69,8 @@ if [ ! -f /var/www/html/wp-config.php ]; then
         --path=/var/www/html
     echo "complete"
 
-    # php 외부 연결 오픈
-    echo "php external connection open"
-    if [ -f "$CONFIG_FILE" ]; then
-        # 'listen' 설정 변경
-        sed -i 's|^listen = /run/php/php'"$PHP_VERSION"'-fpm.sock.*|listen = 0.0.0.0:9000|' "$CONFIG_FILE"
-        echo "Updated $CONFIG_FILE"
-    else
-        echo "Config file not found for PHP version $PHP_VERSION"
-    fi
-    echo "complete"
 fi
+
 
 # php-fpm 시작
 echo "starting php-fpm $PHP_VERSION"

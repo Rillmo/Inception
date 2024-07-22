@@ -2,11 +2,12 @@
 
 set -e
 
+# 외부 ip 허용
+echo "external ip setting"
+sed -i "s|^bind-address\s*=.*|bind-address = 0.0.0.0|" /etc/mysql/mariadb.conf.d/50-server.cnf
+echo "complete"
+
 if [ ! -d "/var/lib/mysql/mysql" ]; then
-	# 외부 ip 허용
-	echo "external ip setting"
-	sed -i "s|^bind-address\s*=.*|bind-address = 0.0.0.0|" /etc/mysql/mariadb.conf.d/50-server.cnf
-	echo "complete"
 	
 	# Check if data directory is empty
 	echo "data dir init"
